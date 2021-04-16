@@ -2,10 +2,11 @@
 #include <string>
 #include <vector>
 using namespace std;
+class Student;
 
 class Person
 {
-    public:
+public:
     string name;
     string address;
     string phoneNumber;
@@ -53,28 +54,94 @@ public:
     Teacher(string tId = "NULL", string sub = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL", bool bl = false) : Person{n, add, pn}, teacherId{tId}, vaccined{bl}, subject{sub} {}
 };
 
+class Batch
+{
+public:
+    int batchId;
+    vector<Student *> student;
+    vector<Teacher *> teacher;
+    Batch(int b, vector<Student *> s = {}, vector<Teacher *> t = {})
+    {
+        batchId = b;
+        student = s;
+        teacher = t;
+    }
+    int addStudent(string er = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL")
+    {
+        Student *s = new Student(er, n, add, pn);
+        student.push_back(s);
+        return student.size();
+    }
+    int addStudent(Student *s)
+    {
+        student.push_back(s);
+        return student.size();
+    }
+    int addTeacher(string tId = "NULL", string sub = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL", bool bl = false)
+    {
+        Teacher *t = new Teacher(tId, sub, n, add, pn);
+        teacher.push_back(t);
+        return teacher.size();
+    }
+    int addTeacher(Teacher *s)
+    {
+        teacher.push_back(s);
+        return teacher.size();
+    }
+};
+
 int main()
 {
+
     /*
-        Person is a interface and print() is the purely virtual function overridden in student and teacher classes
-        We cannot instanciate the person class.DO NOT MAKE OBJECTS OF THE PERSON CLASS.
+        Person is a interface and print() is the purely virtual function overridden in Student and Teacher classes
+        We cannot instanciate the person class.DO NOT MAKE REAL OBJECTS OF THE PERSON CLASS.
     */
     Person *p1, *p2;
-    /*
-        Order of arguments for the constructor of Student class
-        Student(enrolmentNo,name,address,contactNo,beenVaccinated);
-    */
-    p1 = new Student("9920102062", "Rhythm Shandlya", "Bhagalpur, Bihar", "7338520113");
-    /*
-        Order of agruments for the constructor of Teacher class
-        Teacher(teacherId,subject,name,address,contactNo,beenVaccinated);
-    */
-    p2 = new Teacher("1102", "CSE", "Sumit Arora", "Noida-118", "1234567890", true);
 
+    /*
+        How to use Student's constructor: 
+        Student(enrolmentNo,name,address,contactNo);
+        Sturdent();
+    */
+    Student *s1 = new Student("9920102062", "Rhythm Shandlya", "Bhagalpur, Bihar", "7338520113");
+
+    /*
+        How to use Teacher's constructor:
+        Teacher(teacherId,subject,name,address,contactNo,beenVaccinated);
+        Teacher();
+    */
+    Teacher *t1 = new Teacher("1102", "CSE", "Sumit Arora", "Noida-118", "1234567890", true);
+
+    p1 = s1;
+    p2 = t1;
     p1->print();
     cout << endl;
     p2->print();
     cout << endl;
-    system("pause");
+
+    /*
+        How to use Batch's constructor:
+        Batch(batchId);
+        Batch(batchId,vectorOfStudentsPointers, vectorOfTeacherPointers);
+    */
+    Batch F3(65);
+
+    F3.addStudent(s1);
+    F3.addStudent("9920102068", "Ananya Garg", "Delhi", "6283779213");
+    F3.addTeacher(t1);
+    F3.addTeacher("1104", "Physics", "Vijay Kumar", "Noida-62", "2345634390", false);
+
+    //Accessing Student deatils of batch F3
+    F3.student[0]->print(); 
+    cout<<endl;
+    F3.student[1]->print();
+    cout<<endl;
+    //Accessing Teachers detail of batch F3
+    F3.teacher[0]->print();
+    cout<<endl;
+    F3.teacher[1]->print();
+    cout<<endl;
+
     return 0;
 }
