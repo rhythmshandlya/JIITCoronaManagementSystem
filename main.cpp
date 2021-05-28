@@ -3,10 +3,15 @@
 #include <cstring>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 #include <unistd.h>
 typedef long long int lli;
 using namespace std;
 class Student;
+int covidcase = 0;
+int pos_to_neg = 0;
+int stud_vacc = 0;
+int teach_vacc = 0;
 
 class Date
 {
@@ -38,6 +43,7 @@ public:
     virtual ~Person() {}
     Person(string n = "NULL", string add = "NULL", string pn = "NULL") : name{n}, address{add}, phoneNumber{pn} {}
 };
+
 /*
     Generalizationa as follows:
     Teacher---->Person<----Student
@@ -47,17 +53,34 @@ class Student : public Person
 public:
     string eRoll;
     int batchId;
+    bool vaccined;
+    Date enrolmentDate;
     void print()
     {
-        cout << "\nSTUDENT DETAILS";
-        cout << "\nEnrolment Number: " << eRoll;
-        cout << "\nName: " << name;
-        cout << "\nAddress: " << address;
-        cout << "\nContact Number: " << phoneNumber;
-        cout << "\nBatch: " << batchId;
+        cout << "\n\t\t\t\t\t\t\t\t STUDENT DETAILS";
+        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+        cout << "\n\t\t\t\t\t\t\tEnrolment Number: " << eRoll;
+        cout << "\n\t\t\t\t\t\t\tName: " << name;
+        cout << "\n\t\t\t\t\t\t\tAddress: " << address;
+        cout << "\n\t\t\t\t\t\t\tContact Number: " << phoneNumber;
+        cout << "\n\t\t\t\t\t\t\tBatch: " << batchId;
+        cout << "\n\t\t\t\t\t\t\tDate of admission: ";
+        enrolmentDate.print();
+        if (vaccined)
+            cout
+                << "\n\t\t\t\t\t\t\tCOVID-19 immune";
+        else
+            cout << "\n\t\t\t\t\t\t\tNOT VACCINATED for COVID-19 yet";
     }
-    Student(string er = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL", int bId = 0) : Person{n, add, pn}, eRoll{er}, batchId{bId} {}
+    void saveStudent()
+    {
+        /*
+            Save data to file,implemented otherway round
+        */
+    }
+    Student(string er = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL", int bId = 0, Date d = Date()) : Person{n, add, pn}, eRoll{er}, batchId{bId}, enrolmentDate{d} {}
 };
+
 class Teacher : public Person
 {
 public:
@@ -67,22 +90,28 @@ public:
     bool vaccined;
     void print()
     {
-        cout << "\nTEACHER DETAILS";
-        cout << "\nFaculty ID: " << teacherId;
-        cout << "\nSubject: " << subject;
-        cout << "\nName: " << name;
-        cout << "\nAddress: " << address;
-        cout << "\nContact Number: " << phoneNumber;
-        cout << "\nBatch Ids: ";
+        cout << "\n\t\t\t\t\t\t\t\t TEACHER DETAILS";
+        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+        cout << "\n\t\t\t\t\t\t\t\nFaculty ID: " << teacherId;
+        cout << "\n\t\t\t\t\t\t\tSubject: " << subject;
+        cout << "\n\t\t\t\t\t\t\tName: " << name;
+        cout << "\n\t\t\t\t\t\t\tAddress: " << address;
+        cout << "\n\t\t\t\t\t\t\tContact Number: " << phoneNumber;
+        cout << "\n\t\t\t\t\t\t\tBatch Ids: ";
         for (int i = 0; i < batchIds.size(); i++)
             cout << batchIds[i] << " ";
         cout << endl;
 
         if (vaccined)
-            cout
-                << "\nCOVID-19 immune";
+            cout << "\n\t\t\t\t\t\t\tCOVID-19 immune";
         else
-            cout << "\nNOT VACCINATED for COVID-19 yet";
+            cout << "\n\t\t\t\t\t\t\tNOT VACCINATED for COVID-19 yet";
+    }
+    void saveTeacer()
+    {
+        /*
+            Save data to file,implemented otherway round
+        */
     }
     Teacher(string tId = "NULL", string sub = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL", bool bl = false, vector<int> bIds = {}) : Person{n, add, pn}, teacherId{tId}, vaccined{bl}, subject{sub}, batchIds{bIds} {}
 };
@@ -123,93 +152,39 @@ public:
     }
 };
 
-class Patient
-{
-    Student *student;
-    Teacher *teacher;
-    Date positive;
-
-public:
-    Patient()
-    {
-        student = nullptr;
-        teacher = nullptr;
-        positive = Date();
-    }
-    Patient(Teacher t, int dd, int mm, int yy) : positive{Date(dd, mm, yy)}
-    {
-        teacher = new Teacher(t);
-    }
-    Patient(Student s, int dd, int mm, int yy) : positive{Date(dd, mm, yy)}
-    {
-        student = new Student(s);
-    }
-
-    void print()
-    {
-        if (student != nullptr)
-            student->print();
-        else
-            teacher->print();
-        cout << "\nTested positive on: ";
-        positive.print();
-    }
-};
-
 class Admin
 {
 public:
-    int adminId;
+    string adminId;
     string name;
-    string password;
+    string contact;
 
-    Admin(int aId = 100, string n = "NULL", string pwd = "JIIT@65")
+    Admin(string aId = "-1", string n = "NULL", string con = "NULL")
     {
         adminId = aId;
         name = n;
-        pwd = password;
+        contact = con;
     }
-    bool storeAdminData()
+    bool operator==(const Admin &n) const
     {
-        if (adminId == 0)
-            return false;
-        ofstream out("ADMIN.txt", ios::app | ios::binary);
-        if (!out)
-            return false;
-
-        char line[100] = "\0";
-        strcat(line, to_string(adminId).c_str());
-        strcat(line, "&");
-        strcat(line, password.c_str());
-        strcat(line, "&");
-        strcat(line, name.c_str());
-        strcat(line, "\n");
-
-        out.write(line, sizeof(*line));
-        out.close();
-        return true;
+        return adminId == n.adminId;
+    }
+    void print()
+    {
+        cout << "\n\t\t\t\t\t\t\t\t ADIMN DETAILS";
+        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+        cout << "\n\t\t\t\t\t\t\t  ID : " << adminId;
+        cout << "\n\t\t\t\t\t\t\t  NAME : " << name;
+        cout << "\n\t\t\t\t\t\t\t  contact : " << contact;
+        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+    }
+    void saveAdmin()
+    {
+        /*
+            Save data to file,implemented otherway round
+        */
     }
 };
-void titleBar()
-{
-    system("cls");
-    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
-    cout << "\n\t\t\t\t\t\t\t\tJIIT COVID-19 TRACKING";
-    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
-}
-int mainPage()
-{
-    titleBar();
-    cout << "\n\t\t\t\t\t\t\t\t1. STUDENT LOGIN";
-    cout << "\n\t\t\t\t\t\t\t\t2. TEACHER LOGIN";
-    cout << "\n\t\t\t\t\t\t\t\t3. ADMIN LOGIN";
-    cout << "\n\t\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
-    int n;
-    cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
-    cin >> n;
-    return n;
-}
 
 string search(string file, lli id, string pass)
 {
@@ -219,7 +194,6 @@ string search(string file, lli id, string pass)
         cout << "\nUnable to open a required file!\n";
         return "-1";
     }
-
     while (!in.eof())
     {
         char data[100] = "";
@@ -263,6 +237,27 @@ string search(string file, lli id, string pass)
     return "-1";
 }
 
+void titleBar()
+{
+    system("cls");
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+    cout << "\n\t\t\t\t\t\t\t\tJIIT COVID-19 TRACKING";
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+}
+int mainPage()
+{
+    titleBar();
+    cout << "\n\t\t\t\t\t\t\t\t1. STUDENT LOGIN";
+    cout << "\n\t\t\t\t\t\t\t\t2. TEACHER LOGIN";
+    cout << "\n\t\t\t\t\t\t\t\t3. ADMIN LOGIN";
+    cout << "\n\t\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
+    int n;
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cin >> n;
+    return n;
+}
+
 string loginPage(string str)
 {
     titleBar();
@@ -276,10 +271,139 @@ string loginPage(string str)
     str += ".txt";
     return search(str, id, pwd);
 }
-Student rhythm("992061", "Siddhart Malhotra", "Noida-69", "993873723", 65);
-Student sid("992062", "Rhthm Shandlya", "Noida-69", "993873723", 65);
-Student anshu("992063", "Anshuman Tyagi", "Noida-69", "993873723", 65);
-vector<Student> studs = {rhythm, sid, anshu};
+
+int studentPage()
+{
+    titleBar();
+    cout << "\n\t\t\t\t\t\t\t1. GET DETAILS";
+    cout << "\n\t\t\t\t\t\t\t2. REPORT POSITIVE";
+    cout << "\n\t\t\t\t\t\t\t3. COVID-19 SEARCH";
+    cout << "\n\t\t\t\t\t\t\t4. NEWS AND UPDATES";
+    cout << "\n\t\t\t\t\t\t\t5. BACK TO MAIN PAGE";
+    cout << "\n\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
+    int n;
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cin >> n;
+    return n;
+}
+int teacherPage()
+{
+    titleBar();
+    cout << "\n\t\t\t\t\t\t\t1. GET DETAILS";
+    cout << "\n\t\t\t\t\t\t\t2. REPORT POSITIVE";
+    cout << "\n\t\t\t\t\t\t\t3. COVID-19 SEARCH";
+    cout << "\n\t\t\t\t\t\t\t4. NEWS AND UPDATES";
+    cout << "\n\t\t\t\t\t\t\t5. BACK TO MAIN PAGE";
+    cout << "\n\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
+    int n;
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cin >> n;
+    return n;
+}
+
+int adminPage()
+{
+    titleBar();
+    cout << "\n\t\t\t\t\t\t\t\t1. GET DETAILS";
+    cout << "\n\t\t\t\t\t\t\t\t2. CHANGE STUDENT INSTRUCTIONS";
+    cout << "\n\t\t\t\t\t\t\t\t3. CHANGE TEACHERS INSTRUCTIONS";
+    cout << "\n\t\t\t\t\t\t\t\t4. BACK TO MAIN PAGE";
+    cout << "\n\t\t\t\t\t\t\t\t0. TO EXIT";
+    int n;
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cin >> n;
+    return n;
+}
+
+void terminated()
+{
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+    cout << "\n\t\t\t\t\t\t\t\t  PROGRAM TERMINATED";
+    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+    exit(0);
+}
+
+//STUDENTS
+//Batch no. 65
+Date dt1(15, 9, 2020);
+Student s61("992061", "Siddhart Malhotra", "Noida-113", "993873723", 65, dt1);
+Student s62("992062", "Rhthm Shandlya", "Bihar", "9920398765", 65, dt1);
+Student s63("992063", "Anshuman Tyagi", "Chennai", "9914256543", 65, dt1);
+Student s64("992064", "Ananya Garg", "Noida-62", "9856729512", 65, dt1);
+Student s65("992065", "Sahil Kapoor", "Agra", "8976854321", 65, dt1);
+Student s66("992066", "Raghav Vij", "Rohtak", "8979806875", 65, dt1);
+//Batch no. 66
+Date dt2(15, 10, 2020);
+Student s67("992067", "Raj Gupta", "Noida-69", "6789549403", 66, dt2);
+Student s68("992068", "Utsav Jain", "rajnagar", "993873723", 66, dt2);
+Student s69("992069", "Virat Kohli", "Mumbai", "9938456374", 66, dt2);
+Student s70("992070", "Amvi Sinha", "Lucknow", "993873723", 66, dt2);
+Student s71("992071", "Apoorva Jain", "Noida-69", "995674723", 66, dt2);
+//Batch no. 67
+Date dt3(30, 10, 2020);
+Student s72("992072", "Anu kumar", "Noida", "945633723", 67, dt3);
+Student s73("992073", "Ayushman khurana", "Jammu", "993873723", 67, dt3);
+Student s74("992074", "Ramu Kaka", "Rajasthan", "993867853", 67, dt3);
+Student s75("992075", "Rhthm Sharma", "muzzafarnagar", "993873723", 67, dt3);
+Student s76("992076", "Muskan Sharma", "Narula", "993908723", 67, dt3);
+
+vector<Student> students = {s61, s62, s63, s64, s65, s66, s67, s68, s69, s70, s71, s72, s73, s74, s75, s76};
+//Teachers
+Teacher T1("101", "SDF", "Mukesh saraswat", "Agra", "9910020304", "TRUE", {65, 66});
+Teacher T2("102", "English", "Swati Pandey", "Agra", "9910020304", "TRUE", {67, 66});
+Teacher T3("103", "Physics", "Muskan saraswat", "Delhi", "9910049504", "TRUE", {65, 66});
+Teacher T4("104", "SDF", "Raj Mehta", "Allahbad", "9910450304", "TRUE", {65, 67});
+Teacher T5("105", "Chemistry", "Mukesh Verma", "Kolkata", "9910024504", "TRUE", {67, 66});
+vector<Teacher> teachers = {T1, T2, T3, T4, T5};
+
+/*ADMIN*/
+Admin A1("1101", "Rhythm Shandlya", "733852013");
+Admin A2("1102", "Raghav Vij", "8789436390");
+Admin A3("1103", "Ananya Garg", "9939342567");
+vector<Admin> admin{A1, A2, A3};
+
+string snews = "\n\t\t\t\t\t\t#Examination will be on mettl platform",
+       tnews = "\n\t\t\t\t\t\t#Examination will be on mettl platform";
+void news(char ch)
+{
+    cout << "\n\t\t\t\t\t\tTotal COVID cases:" << covidcase;
+    cout << "\n\t\t\t\t\t\tRecent recoveries: " << pos_to_neg;
+    cout << "\n\t\t\t\t\t\tNo. of vaccinated students on campus" << stud_vacc;
+    cout << "\n\t\t\t\t\t\tNo. of vaccinated teachers on campus" << teach_vacc;
+    cout << "\n\t\t\t\t\t\t#Masks and sanitizer compulsory on campus grounds,otherwise fine of Rs.2000/- will be charged." << endl;
+    if (ch == 't')
+        cout << tnews << endl;
+    else
+        cout << snews;
+}
+
+bool searchCases(string id)
+{
+    ifstream in("POSITIVE.txt", ios::in);
+    if (!in)
+    {
+        cout << "\nUnable to open a required file!\n";
+        return "-1";
+    }
+    while (!in.eof())
+    {
+        char data[30] = "";
+        in.getline(data, 30, '\n');
+        if (strcmp(data, id.c_str()) == 0)
+            return true;
+    }
+    return false;
+}
+
+void reportPositive(string id)
+{
+    ofstream op("POSITIVE.txt", ios::app);
+    op << id << "\n";
+    op.close();
+}
 
 int main()
 {
@@ -294,6 +418,69 @@ MAIN:
             string str = loginPage("STUDENT");
             if (str != "-1")
             {
+                int k;
+                do
+                {
+                STUDENT_0:
+                    k = studentPage();
+                    if (k == 1)
+                    {
+                        for (Student s : students)
+                        {
+                            if (s.eRoll == str)
+                            {
+                                s.print();
+                                int m;
+                                cout << "\n\t\t\t\t\t\t\t0)BACK ";
+                                cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                                cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                                cin >> m;
+                                if (m == 0)
+                                {
+                                    goto STUDENT_0;
+                                }
+                                else
+                                {
+                                    goto MAIN;
+                                }
+                            }
+                        }
+                    }
+                    else if (k == 2)
+                    {
+                        reportPositive(str);
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+                        cout << "\n\t\t\t\t\t\t\t\t  DATA REGISTERED";
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+                        sleep(1);
+                    }
+                    else if (k == 3)
+                    {
+                        cout << "\n\t\t\t\t\t\tEnter STUDENT ID: ";
+                        string std;
+                        cin >> std;
+                        if (searchCases(std))
+                        {
+                            cout << "\n\t\t\t\t\t\tYES, the user associated with this ID is COVID-19 positive!";
+                        }
+                        else
+                        {
+                            cout << "\n\t\t\t\t\t\tThe user associated with this ID is safe!";
+                        }
+                    }
+                    else if (k == 4)
+                    {
+                        news('s');
+                    }
+                    else if (k == 5)
+                    {
+                        goto MAIN;
+                    }
+                    else if (k == 0)
+                    {
+                        terminated();
+                    }
+                } while (k != 0);
             }
             else
             {
@@ -324,6 +511,66 @@ MAIN:
             string str = loginPage("TEACHER");
             if (str != "-1")
             {
+            TEACHER_0:
+                int k = teacherPage();
+                if (k == 1)
+                {
+                    for (Teacher t : teachers)
+                    {
+                        if (t.teacherId == str)
+                        {
+                            t.print();
+                            int m;
+                            cout << "\n\t\t\t\t\t\t\t0)BACK ";
+                            cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                            cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                            cin >> m;
+                            if (m == 0)
+                            {
+                                goto TEACHER_0;
+                            }
+                            else
+                            {
+                                goto MAIN;
+                            }
+                        }
+                    }
+                }
+                else if (k == 2)
+                {
+                    reportPositive(str);
+                    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+                    cout << "\n\t\t\t\t\t\t\t\t  DATA REGISTERED";
+                    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+                    sleep(1);
+                }
+                else if (k == 3)
+                {
+                    cout << "\n\t\t\t\t\t\tEnter TEACHER ID: ";
+                    string std;
+                    cin >> std;
+                    if (searchCases(std))
+                    {
+                        cout << "\n\t\t\t\t\t\tYES, the user associated with this ID is COVID-19 positive!";
+                    }
+                    else
+                    {
+                        cout << "\n\t\t\t\t\t\tThe user associated with this ID is safe!";
+                    }
+                }
+                else if (k == 4)
+                {
+                    news('t');
+                }
+                else if (k == 5)
+                {
+                    goto MAIN;
+                }
+                else if (k == 0)
+                {
+                    terminated();
+                    return 0;
+                }
             }
             else
             {
@@ -348,12 +595,50 @@ MAIN:
                 }
             }
         }
+
         else if (n == 3)
         {
         ADMIN_1:
             string str = loginPage("ADMIN");
+            auto it = find(admin.begin(), admin.end(), str);
             if (str != "-1")
             {
+                int k;
+                do
+                {
+                    k = adminPage();
+                    if (k == 1)
+                    {
+                        char j;
+                        it->print();
+                        cout << "\n\t\t\t\t\t\t\t  PRESS ANYTHING WITH ENTER GET BACK";
+                        cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                        cin >> j;
+                    }
+                    else if (k == 2)
+                    {
+                        system("CLS");
+                        cout << "ENTER DETAILS: " << endl;
+                        fflush(stdin);
+                        getline(cin >> ws, snews);
+                    }
+                    else if (k == 3)
+                    {
+                        system("CLS");
+                        cout << "ENTER DETAILS: " << endl;
+                        fflush(stdin);
+                        getline(cin >> ws, tnews);
+                    }
+                    else if (k == 4)
+                    {
+                        goto MAIN;
+                    }
+                    else if (k == 0)
+                    {
+                        terminated();
+                        return 0;
+                    }
+                } while (true);
             }
             else
             {
@@ -378,11 +663,9 @@ MAIN:
                 }
             }
         }
-        else
+        if (n == 0)
         {
-            cout << "\n\t\t\t\t\t\t      -----------------------------------------";
-            cout << "\n\t\t\t\t\t\t\t\t  PROGRAM TERMINATED";
-            cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+            terminated();
         }
     } while (n == 1 || n == 2 || n == 3);
     return 0;
