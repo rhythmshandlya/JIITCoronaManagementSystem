@@ -5,13 +5,29 @@
 #include <fstream>
 #include <algorithm>
 #include <unistd.h>
+
 typedef long long int lli;
 using namespace std;
 class Student;
-int covidcase = 0;
-int pos_to_neg = 0;
-int stud_vacc = 0;
-int teach_vacc = 0;
+
+int countCases()
+{
+    ifstream in("POSITIVE.txt", ios::in);
+    if (!in)
+    {
+        cout << "\nUnable to open a required file!\n";
+        return -1;
+    }
+    int count = 0;
+    while (!in.eof())
+    {
+        char data[30] = "";
+        in.getline(data, 30, '\n');
+        count++;
+    }
+    return count - 1;
+}
+int covidcase = countCases();
 
 class Date
 {
@@ -75,7 +91,7 @@ public:
     void saveStudent()
     {
         /*
-            Save data to file,implemented otherway round
+            Save data to file,implemented otherway round.
         */
     }
     Student(string er = "NULL", string n = "NULL", string add = "NULL", string pn = "NULL", int bId = 0, Date d = Date()) : Person{n, add, pn}, eRoll{er}, batchId{bId}, enrolmentDate{d} {}
@@ -253,7 +269,7 @@ int mainPage()
     cout << "\n\t\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
     int n;
     cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cout << "\n\t\t\t\t\t\t\tINPUT: ";
     cin >> n;
     return n;
 }
@@ -283,7 +299,7 @@ int studentPage()
     cout << "\n\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
     int n;
     cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cout << "\n\t\t\t\t\t\t\tINPUT: ";
     cin >> n;
     return n;
 }
@@ -298,7 +314,7 @@ int teacherPage()
     cout << "\n\t\t\t\t\t\t\t0. ANY OTHER TO EXIT";
     int n;
     cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cout << "\n\t\t\t\t\t\t\tINPUT: ";
     cin >> n;
     return n;
 }
@@ -306,14 +322,14 @@ int teacherPage()
 int adminPage()
 {
     titleBar();
-    cout << "\n\t\t\t\t\t\t\t\t1. GET DETAILS";
-    cout << "\n\t\t\t\t\t\t\t\t2. CHANGE STUDENT INSTRUCTIONS";
-    cout << "\n\t\t\t\t\t\t\t\t3. CHANGE TEACHERS INSTRUCTIONS";
-    cout << "\n\t\t\t\t\t\t\t\t4. BACK TO MAIN PAGE";
-    cout << "\n\t\t\t\t\t\t\t\t0. TO EXIT";
+    cout << "\n\t\t\t\t\t\t\t1. GET DETAILS";
+    cout << "\n\t\t\t\t\t\t\t2. CHANGE STUDENT INSTRUCTIONS";
+    cout << "\n\t\t\t\t\t\t\t3. CHANGE TEACHERS INSTRUCTIONS";
+    cout << "\n\t\t\t\t\t\t\t4. BACK TO MAIN PAGE";
+    cout << "\n\t\t\t\t\t\t\t0. TO EXIT";
     int n;
     cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-    cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+    cout << "\n\t\t\t\t\t\t\tINPUT: ";
     cin >> n;
     return n;
 }
@@ -365,15 +381,16 @@ Admin A2("1102", "Raghav Vij", "8789436390");
 Admin A3("1103", "Ananya Garg", "9939342567");
 vector<Admin> admin{A1, A2, A3};
 
-string snews = "\n\t\t\t\t\t\t#Examination will be on mettl platform",
-       tnews = "\n\t\t\t\t\t\t#Examination will be on mettl platform";
+string snews = "\n\t\t\t\t\t\t\t#Examination will be on mettl platform",
+       tnews = "\n\t\t\t\t\t\t\t#Examination will be on mettl platform";
 void news(char ch)
 {
-    cout << "\n\t\t\t\t\t\tTotal COVID cases:" << covidcase;
-    cout << "\n\t\t\t\t\t\tRecent recoveries: " << pos_to_neg;
-    cout << "\n\t\t\t\t\t\tNo. of vaccinated students on campus" << stud_vacc;
-    cout << "\n\t\t\t\t\t\tNo. of vaccinated teachers on campus" << teach_vacc;
-    cout << "\n\t\t\t\t\t\t#Masks and sanitizer compulsory on campus grounds,otherwise fine of Rs.2000/- will be charged." << endl;
+    int stud_vacc = 5;
+    int teach_vacc = 5;
+    cout << "\n\t\t\t\t\t\t\tTotal COVID cases:" << covidcase;
+    cout << "\n\t\t\t\t\t\t\tNo. of vaccinated students on campus" << stud_vacc;
+    cout << "\n\t\t\t\t\t\t\tNo. of vaccinated teachers on campus" << teach_vacc;
+    cout << "\n\t\t\t\t\t\t\t#Masks and sanitizer compulsory on campus grounds,otherwise fine of Rs.2000/- will be charged." << endl;
     if (ch == 't')
         cout << tnews << endl;
     else
@@ -431,9 +448,9 @@ MAIN:
                             {
                                 s.print();
                                 int m;
-                                cout << "\n\t\t\t\t\t\t\t0)BACK ";
+                                cout << "\n\t\t\t\t\t\t\t0. BACK ";
                                 cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-                                cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                                cout << "\n\t\t\t\t\t\t\tINPUT: ";
                                 cin >> m;
                                 if (m == 0)
                                 {
@@ -456,21 +473,47 @@ MAIN:
                     }
                     else if (k == 3)
                     {
-                        cout << "\n\t\t\t\t\t\tEnter STUDENT ID: ";
+                        cout << "\n\t\t\t\t\t\t\tEnter user ID to search: ";
                         string std;
                         cin >> std;
                         if (searchCases(std))
                         {
-                            cout << "\n\t\t\t\t\t\tYES, the user associated with this ID is COVID-19 positive!";
+                            cout << "\n\t\t\t\t\t\t\tYES, the user associated with this\n\t\t\t\t\t\t\tID is COVID-19 positive!";
                         }
                         else
                         {
-                            cout << "\n\t\t\t\t\t\tThe user associated with this ID is safe!";
+                            cout << "\n\t\t\t\t\t\t\tThe user associated with this\n\t\t\t\t\t\t\t ID is safe!";
+                        }
+                        int m;
+                        cout << "\n\t\t\t\t\t\t\t0. BACK ";
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                        cout << "\n\t\t\t\t\t\t\tINPUT: ";
+                        cin >> m;
+                        if (m == 0)
+                        {
+                            goto STUDENT_0;
+                        }
+                        else
+                        {
+                            goto MAIN;
                         }
                     }
                     else if (k == 4)
                     {
                         news('s');
+                        int m;
+                        cout << "\n\t\t\t\t\t\t\t0. BACK ";
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                        cout << "\n\t\t\t\t\t\t\tINPUT: ";
+                        cin >> m;
+                        if (m == 0)
+                        {
+                            goto STUDENT_0;
+                        }
+                        else
+                        {
+                            goto MAIN;
+                        }
                     }
                     else if (k == 5)
                     {
@@ -480,7 +523,7 @@ MAIN:
                     {
                         terminated();
                     }
-                } while (k != 0);
+                } while (true);
             }
             else
             {
@@ -489,7 +532,7 @@ MAIN:
                 cout << "\n\t\t\t\t\t\t\t\t1. RETRY LOGIN";
                 int m;
                 cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-                cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                cout << "\n\t\t\t\t\t\t\tINPUT: ";
                 cin >> m;
                 if (m == 0)
                 {
@@ -512,65 +555,95 @@ MAIN:
             if (str != "-1")
             {
             TEACHER_0:
-                int k = teacherPage();
-                if (k == 1)
+                int k;
+                do
                 {
-                    for (Teacher t : teachers)
+                    k = teacherPage();
+                    if (k == 1)
                     {
-                        if (t.teacherId == str)
+                        for (Teacher t : teachers)
                         {
-                            t.print();
-                            int m;
-                            cout << "\n\t\t\t\t\t\t\t0)BACK ";
-                            cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-                            cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
-                            cin >> m;
-                            if (m == 0)
+                            if (t.teacherId == str)
                             {
-                                goto TEACHER_0;
-                            }
-                            else
-                            {
-                                goto MAIN;
+                                t.print();
+                                int m;
+                                cout << "\n\t\t\t\t\t\t\t0)BACK ";
+                                cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                                cout << "\n\t\t\t\t\t\t\tINPUT: ";
+                                cin >> m;
+                                if (m == 0)
+                                {
+                                    goto TEACHER_0;
+                                }
+                                else
+                                {
+                                    goto MAIN;
+                                }
                             }
                         }
                     }
-                }
-                else if (k == 2)
-                {
-                    reportPositive(str);
-                    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
-                    cout << "\n\t\t\t\t\t\t\t\t  DATA REGISTERED";
-                    cout << "\n\t\t\t\t\t\t      -----------------------------------------";
-                    sleep(1);
-                }
-                else if (k == 3)
-                {
-                    cout << "\n\t\t\t\t\t\tEnter TEACHER ID: ";
-                    string std;
-                    cin >> std;
-                    if (searchCases(std))
+                    else if (k == 2)
                     {
-                        cout << "\n\t\t\t\t\t\tYES, the user associated with this ID is COVID-19 positive!";
+                        reportPositive(str);
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+                        cout << "\n\t\t\t\t\t\t\t\t  DATA REGISTERED";
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------";
+                        sleep(1);
                     }
-                    else
+                    else if (k == 3)
                     {
-                        cout << "\n\t\t\t\t\t\tThe user associated with this ID is safe!";
+                        cout << "\n\t\t\t\t\t\t\tEnter user ID to search: ";
+                        string std;
+                        cin >> std;
+                        if (searchCases(std))
+                        {
+                            cout << "\n\t\t\t\t\t\t\tYES, the user associated with this ID is COVID-19 positive!";
+                        }
+                        else
+                        {
+                            cout << "\n\t\t\t\t\t\t\tThe user associated with this ID is safe!";
+                        }
+                        int m;
+                        cout << "\n\t\t\t\t\t\t\t0. BACK ";
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                        cout << "\n\t\t\t\t\t\t\tINPUT: ";
+                        cin >> m;
+                        if (m == 0)
+                        {
+                            goto TEACHER_0;
+                        }
+                        else
+                        {
+                            goto MAIN;
+                        }
                     }
-                }
-                else if (k == 4)
-                {
-                    news('t');
-                }
-                else if (k == 5)
-                {
-                    goto MAIN;
-                }
-                else if (k == 0)
-                {
-                    terminated();
-                    return 0;
-                }
+                    else if (k == 4)
+                    {
+                        news('t');
+                        int m;
+                        cout << "\n\t\t\t\t\t\t\t0. BACK ";
+                        cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
+                        cout << "\n\t\t\t\t\t\t\tINPUT: ";
+                        cin >> m;
+                        if (m == 0)
+                        {
+                            goto TEACHER_0;
+                        }
+                        else
+                        {
+                            goto MAIN;
+                        }
+                    }
+                    else if (k == 5)
+                    {
+                        goto MAIN;
+                    }
+                    else if (k == 0)
+                    {
+                        terminated();
+                        return 0;
+                    }
+                } while (true);
             }
             else
             {
@@ -579,7 +652,7 @@ MAIN:
                 cout << "\n\t\t\t\t\t\t\t\t1. RETRY LOGIN";
                 int m;
                 cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-                cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                cout << "\n\t\t\t\t\t\t\tINPUT: ";
                 cin >> m;
                 if (m == 0)
                 {
@@ -609,10 +682,10 @@ MAIN:
                     k = adminPage();
                     if (k == 1)
                     {
-                        char j;
                         it->print();
+                        char j;
                         cout << "\n\t\t\t\t\t\t\t  PRESS ANYTHING WITH ENTER GET BACK";
-                        cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                        cout << "\n\t\t\t\t\t\t\tINPUT: ";
                         cin >> j;
                     }
                     else if (k == 2)
@@ -647,7 +720,7 @@ MAIN:
                 cout << "\n\t\t\t\t\t\t\t\t1. RETRY LOGIN";
                 int m;
                 cout << "\n\t\t\t\t\t\t      -----------------------------------------\n";
-                cout << "\n\t\t\t\t\t\t\t\tINPUT: ";
+                cout << "\n\t\t\t\t\t\t\tINPUT: ";
                 cin >> m;
                 if (m == 0)
                 {
